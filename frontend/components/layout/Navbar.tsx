@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -12,8 +13,15 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [activeLink, setActiveLink] = useState("Home");
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+    return pathname.startsWith(href);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6">
@@ -55,11 +63,10 @@ export default function Navbar() {
               key={link.name}
               href={link.href}
               className={`px-[18px] py-[10px] text-[14px] text-text-primary rounded-full transition-all duration-150 ${
-                activeLink === link.name
-                  ? "bg-surface-light  font-medium"
+                isActive(link.href)
+                  ? "bg-surface-light font-medium"
                   : "hover:text-text-primary"
               }`}
-              onClick={() => setActiveLink(link.name)}
             >
               {link.name}
             </Link>
@@ -122,14 +129,11 @@ export default function Navbar() {
               key={link.name}
               href={link.href}
               className={`px-4 py-3 text-base rounded-xl transition-all ${
-                activeLink === link.name
+                isActive(link.href)
                   ? "bg-surface-light text-text-primary"
                   : "text-text-secondary hover:bg-surface-light hover:text-text-primary"
               }`}
-              onClick={() => {
-                setActiveLink(link.name);
-                setIsMobileMenuOpen(false);
-              }}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               {link.name}
             </Link>
