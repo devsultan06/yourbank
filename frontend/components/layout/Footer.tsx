@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-[#1C1C1C] pt-20 pb-8 border-t border-[#262626]">
-      <div className="max-w-[1600px] mx-auto px-4 md:px-6 relative overflow-hidden">
+      <div className="max-w-[1500px] mx-auto px-4 md:px-6 relative overflow-hidden">
         {/* Logo and Nav */}
         <div className="flex flex-col items-center justify-center mb-12">
           {/* Logo */}
