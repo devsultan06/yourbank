@@ -22,7 +22,7 @@ export default function Navbar() {
           src="/images/behind.png"
           alt=""
           fill
-          className="object-contain object-left-top opacity-80"
+          className="object-contain object-left-top"
           priority
         />
       </div>

@@ -102,7 +102,7 @@ export default function Hero() {
   }, [playTransactionSound, soundEnabled]);
 
   return (
-    <section className="relative min-h-screen pt-[180px] pb-20 px-4 md:px-6 overflow-hidden">
+    <section className="relative pt-[180px] pb-20 px-4 md:px-6 overflow-hidden">
       <div className="relative z-10 max-w-[1600px] mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-[400px] items-start">
           {/* Left Content */}
@@ -160,7 +160,7 @@ export default function Hero() {
                 src="/images/abstract2.png"
                 alt=""
                 fill
-                className="object-contain opacity-70"
+                className="object-contain "
               />
             </div>
 
