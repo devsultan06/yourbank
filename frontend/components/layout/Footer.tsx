@@ -19,7 +19,7 @@ export default function Footer() {
               className="h-8 w-auto"
             />
                 <Image
-              src="/images/YourBank.svg"
+              src="/images/YourBanK.svg"
               alt="YourBank"
               width={94}
               height={15}

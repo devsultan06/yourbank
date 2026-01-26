@@ -56,7 +56,7 @@ export default function Testimonials() {
   const activeTestimonials = testimonials[activeTab];
 
   return (
-    <section className="px-4 py-20 md:px-6">
+    <section className="px-4 pt-20 pb-10 md:px-6">
       <div className="max-w-[1500px] mx-auto">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-16">

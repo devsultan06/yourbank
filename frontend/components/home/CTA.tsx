@@ -7,7 +7,7 @@ import ScrollAnimation from "@/components/ui/ScrollAnimation";
 
 export default function CTA() {
   return (
-    <section className="px-4 py-20 md:px-6 ">
+    <section className="px-4 pb-20 md:px-6 ">
       <div className="max-w-[1500px] mx-auto">
         <ScrollAnimation>
           <div className="relative rounded-[20px] overflow-hidden p-8 md:p-16 lg:p-[60px] flex flex-col lg:flex-row items-center justify-between gap-8">
