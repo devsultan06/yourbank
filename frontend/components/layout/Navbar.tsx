@@ -27,7 +27,7 @@ export default function Navbar() {
         />
       </div>
 
-      <div className="relative z-10 max-w-[1400px] mx-auto flex items-center justify-between bg-[#1C1C1C] border border-border rounded-full px-[24px] py-[14px]">
+      <div className="relative z-10 max-w-[1500px] mx-auto flex items-center justify-between bg-[#1C1C1C] border border-border rounded-full px-[24px] py-[14px]">
         {/* Logo */}
         <Link
           href="/"

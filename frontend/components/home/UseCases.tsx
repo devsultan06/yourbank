@@ -42,7 +42,7 @@ const businessStats = [
 export default function UseCases() {
   return (
     <section className="px-4 py-20 md:px-6">
-      <div className="max-w-[1600px] mx-auto">
+      <div className="max-w-[1500px] mx-auto">
         {/* Header */}
         <div className="mb-16">
           <h2 className="text-3xl md:text-4xl font-medium text-text-primary mb-4">

@@ -59,7 +59,7 @@ export default function Products() {
 
   return (
     <section className=" px-4 py-20 md:px-6">
-      <div className="max-w-[1600px] mx-auto">
+      <div className="max-w-[1500px] mx-auto">
         {/* Header */}
         <ScrollAnimation>
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-16 items-center lg:items-start">

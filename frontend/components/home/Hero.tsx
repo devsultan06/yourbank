@@ -103,7 +103,7 @@ export default function Hero() {
 
   return (
     <section className="relative pt-[180px] pb-20 px-4 md:px-6 overflow-hidden">
-      <div className="relative z-10 max-w-[1600px] mx-auto">
+      <div className="relative z-10 max-w-[1500px] mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-[400px] items-start">
           {/* Left Content */}
           <div className="space-y-8 max-w-[600px] mx-auto lg:mx-0 text-center lg:text-left flex flex-col items-center lg:items-start">
