@@ -9,9 +9,18 @@ export default function LoginSection() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <section className="px-4 md:px-6 flex justify-center pt-[50px] items-center relative">
-      <div className="relative w-full max-w-[1000px] min-h-[600px] md:min-h-[700px] rounded-[30px] overflow-hidden border border-[#262626] flex flex-col items-center justify-center p-8 md:p-12">
-        <div className="absolute inset-0 w-full h-full">
+    <section className="px-4 md:px-6 flex justify-center pt-[120px] pb-20 items-center relative min-h-screen">
+      <div className="absolute top-8 right-8 z-50">
+        <Link
+          href="/"
+          className="text-white text-sm font-medium underline hover:text-primary transition-colors"
+        >
+          Go Home
+        </Link>
+      </div>
+
+      <div className="relative w-full max-w-[500px] min-h-[500px] md:min-h-[600px] rounded-[30px] border border-[#262626] flex flex-col items-center justify-center p-6 md:p-10">
+        <div className="absolute inset-0 w-full h-full rounded-[30px] overflow-hidden">
           <Image
             src="/images/Login.png"
             alt="Login Background"
@@ -23,7 +32,7 @@ export default function LoginSection() {
 
         <div className="relative z-10 w-full max-w-[500px] text-center">
           <ScrollAnimation>
-            <h1 className="text-primary text-3xl md:text-[48px] font-medium mb-4">
+            <h1 className="text-primary text-3xl text-3xl md:text-4xl font-medium mb-4">
               Login
             </h1>
             <p className="text-[#B3B3B3] text-[16px] mb-12">

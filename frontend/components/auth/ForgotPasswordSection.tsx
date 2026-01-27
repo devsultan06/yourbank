@@ -1,35 +1,46 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import ScrollAnimation from "@/components/ui/ScrollAnimation";
+import Image from "next/image";
 
 export default function ForgotPasswordSection() {
   return (
-    <section className="px-4 md:px-6 flex justify-center pt-[50px] items-center relative">
-      <div className="relative w-full max-w-[1000px] min-h-[500px] md:min-h-[600px] rounded-[30px] overflow-hidden border border-[#262626] flex flex-col items-center justify-center p-8 md:p-12 relative">
+    <section className="px-4 md:px-6 flex justify-center pt-[120px] items-center relative min-h-screen">
+      <div className="absolute top-8 right-8 z-50">
+        <Link
+          href="/"
+          className="text-white text-sm font-medium underline hover:text-primary transition-colors"
+        >
+          Go Home
+        </Link>
+      </div>
+
+      <div className="relative w-full max-w-[500px] min-h-[500px] md:min-h-[500px] rounded-[30px] overflow-hidden border border-[#262626] flex flex-col items-center justify-center p-6 md:p-10">
         <div className="absolute inset-0 w-full h-full">
-          <Image
-            src="/images/Login.png"
-            alt="Background"
-            fill
-            className="object-cover"
-            priority
-          />
+          <div className="absolute inset-0 w-full h-full">
+            <Image
+              src="/images/Login.png"
+              alt="Login Background"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
         </div>
 
         <div className="relative z-10 w-full max-w-[600px] text-center">
           <ScrollAnimation>
-            <h1 className="text-primary text-3xl md:text-[48px] font-medium mb-4">
+            <h1 className="text-primary text-3xl md:text-4xl font-medium mb-4">
               Forgot Password
             </h1>
-            <p className="text-[#B3B3B3] text-[16px] mb-12 max-w-lg mx-auto">
-              Enter your email address associated with your account and we will
-              email you a link to reset your password.
+            <p className="text-[#B3B3B3] text-[16px] mb-8">
+              Enter your email address and we'll send you a link to reset your
+              password.
             </p>
 
             <form className="space-y-6 max-w-[500px] mx-auto">
-              {/* Email */}
               <div className="relative">
                 <input
                   type="email"
@@ -38,13 +49,12 @@ export default function ForgotPasswordSection() {
                 />
               </div>
 
-              {/* Buttons */}
               <div className="space-y-4 pt-4">
                 <button
                   type="submit"
                   className="w-full bg-primary text-[#1C1C1C] font-semibold rounded-full py-4 text-[16px] hover:bg-opacity-90 transition-all hover:scale-[1.02]"
                 >
-                  Submit
+                  Send Reset Link
                 </button>
                 <Link
                   href="/auth/login"

@@ -1,12 +1,12 @@
 "use client";
 
-import LoginSection from "@/components/auth/LoginSection";
+import OnboardingSection from "@/components/auth/OnboardingSection";
 
-export default function LoginPage() {
+export default function OnboardingPage() {
   return (
     <div className="bg-[#191919] min-h-screen flex items-center justify-center">
       <main className="w-full">
-        <LoginSection />
+        <OnboardingSection />
       </main>
     </div>
   );

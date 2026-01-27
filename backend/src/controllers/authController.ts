@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { pool } from "../db.js";
+import { prisma } from "../db.js";
 import logger from "../utils/logger.js";
 import { successResponse, errorResponse } from "../utils/apiResponse.js";
 
@@ -18,24 +18,50 @@ export const register = async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
 
     // Check if user already exists (by email or username)
-    const existingUser = await pool.query(
-      "SELECT id FROM users WHERE email = $1 OR username = $2",
-      [email, username],
-    );
-    if (existingUser.rows.length) {
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { username }],
+      },
+    });
+
+    if (existingUser) {
       return res.status(400).json(errorResponse("User already exists", 400));
     }
 
     // Hash password and create user
     const hashed = await bcrypt.hash(password, 10);
-    const user = await pool.query(
-      "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email",
-      [username, email, hashed],
-    );
+    const user = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashed,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+      },
+    });
+
+    // Generate tokens immediately after registration
+    const accessToken = createAccessToken(user.id);
+    const refreshToken = createRefreshToken(user.id);
+
+    // Set refresh token as httpOnly cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      path: "/auth/refresh",
+    });
 
     res
       .status(201)
-      .json(successResponse(user.rows[0], "User registered successfully"));
+      .json(
+        successResponse(
+          { user, accessToken },
+          "User registered and logged in successfully",
+        ),
+      );
   } catch (error) {
     logger.error({ err: error, email: req.body.email }, "Register failed");
     res.status(500).json(errorResponse("Server error", 500));
@@ -48,15 +74,15 @@ export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     // Find user
-    const result = await pool.query("SELECT * FROM users WHERE email = $1", [
-      email,
-    ]);
-    if (!result.rows.length) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
       return res.status(400).json(errorResponse("User not found", 400));
     }
 
     // Verify password
-    const user = result.rows[0];
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
       return res.status(401).json(errorResponse("Invalid credentials", 401));
@@ -102,4 +128,45 @@ export const refresh = (req: Request, res: Response) => {
 export const logout = (_req: Request, res: Response) => {
   res.clearCookie("refreshToken", { path: "/auth/refresh" });
   res.json(successResponse(null, "Logged out successfully"));
+};
+// Complete Onboarding
+export const onboarding = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+    const { firstName, lastName, phone } = req.body;
+
+    if (!firstName || !lastName) {
+      return res
+        .status(400)
+        .json(errorResponse("First name and last name are required", 400));
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstName,
+        lastName,
+        phone,
+        isOnboardingComplete: true,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isOnboardingComplete: true,
+      },
+    });
+
+    res
+      .status(200)
+      .json(successResponse(updatedUser, "Onboarding completed successfully"));
+  } catch (error) {
+    logger.error(
+      { err: error, userId: (req as any).user?.id },
+      "Onboarding failed",
+    );
+    res.status(500).json(errorResponse("Server error", 500));
+  }
 };

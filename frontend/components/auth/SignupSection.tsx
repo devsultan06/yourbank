@@ -9,9 +9,18 @@ export default function SignupSection() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <section className="px-4 md:px-6 flex justify-center pt-[50px] items-center relative">
-      <div className="relative w-full max-w-[1000px] min-h-[600px] md:min-h-[700px] rounded-[30px] overflow-hidden border border-[#262626] flex flex-col items-center justify-center p-8 md:p-12 relative">
-        <div className="absolute inset-0 w-full h-full">
+    <section className="px-4 md:px-6 flex justify-center pt-[120px] pb-20 items-center relative min-h-screen">
+      <div className="absolute top-8 right-8 z-50">
+        <Link
+          href="/"
+          className="text-white text-sm font-medium underline hover:text-primary transition-colors"
+        >
+          Go Home
+        </Link>
+      </div>
+
+      <div className="relative w-full max-w-[500px] min-h-[500px] md:min-h-[600px] rounded-[30px] border border-[#262626] flex flex-col items-center justify-center p-6 md:p-10 relative">
+        <div className="absolute inset-0 w-full h-full rounded-[30px] overflow-hidden">
           <Image
             src="/images/Login.png"
             alt="Background"
@@ -23,7 +32,7 @@ export default function SignupSection() {
 
         <div className="relative z-10 w-full max-w-[1000px] text-center">
           <ScrollAnimation>
-            <h1 className="text-primary text-3xl md:text-[48px] font-medium mb-4">
+            <h1 className="text-primary text-3xl md:text-4xl font-medium mb-4">
               Sign Up
             </h1>
             <p className="text-[#B3B3B3] text-[16px] mb-12 max-w-2xl mx-auto">
@@ -32,62 +41,51 @@ export default function SignupSection() {
             </p>
 
             <form className="space-y-6 max-w-[600px] mx-auto">
-              {/* Name Row */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Enter First Name"
-                    className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
-                  />
-                </div>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Enter Last Name"
-                    className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
-                  />
-                </div>
+              {/* Username Field */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Create a Username"
+                  className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
+                />
               </div>
 
               {/* Email & Password Row */}
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Email */}
-                <div className="relative">
-                  <input
-                    type="email"
-                    placeholder="Enter your Email"
-                    className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
-                  />
-                </div>
+              {/* Email */}
+              <div className="relative">
+                <input
+                  type="email"
+                  placeholder="Enter your Email"
+                  className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
 
-                {/* Password */}
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your Password"
-                    className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors pr-12"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 text-[#59595A] hover:text-white transition-colors"
+              {/* Password */}
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your Password"
+                  className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-6 top-1/2 -translate-y-1/2 text-[#59595A] hover:text-white transition-colors"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-                </div>
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
               </div>
 
               {/* Buttons */}
