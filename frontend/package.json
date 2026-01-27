@@ -9,13 +9,21 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "chart.js": "^4.5.1",
+    "clsx": "^2.1.1",
     "framer-motion": "^12.23.26",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.563.0",
     "next": "16.0.8",
     "react": "19.2.1",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.1",
-    "swiper": "^12.0.3"
+    "react-leaflet": "^5.0.0",
+    "swiper": "^12.0.3",
+    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.21",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

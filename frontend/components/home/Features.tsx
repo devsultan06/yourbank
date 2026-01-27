@@ -17,9 +17,9 @@ const featuresData = {
         "Enjoy the convenience of accessing your accounts anytime, anywhere through our secure online banking platform. Check balances, transfer funds, and pay bills with ease.",
     },
     {
-      title: "Mobile Banking App",
+      title: "Digital Banking Platform",
       description:
-        "Stay connected to your finances on the go with our user-friendly mobile banking app. Easily manage your accounts, deposit checks, and make payments from your smartphone or tablet.",
+        "Manage your finances from any device with our powerful web platform. Access advanced dashboard features, analytics, and instant transfers directly from your browser.",
     },
     {
       title: "Secure Transactions",
