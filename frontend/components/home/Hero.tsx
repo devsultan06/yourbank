@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 // Transaction data - extended list for continuous animation
 const allTransactions = [
@@ -25,8 +25,6 @@ const currencies = [
 
 export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const audioContextRef = useRef<AudioContext | null>(null);
 
   // Monthly income values for animation
   const incomeValues = [
@@ -38,51 +36,6 @@ export default function Hero() {
     "+ $2,875.00",
   ];
 
-  // Play subtle transaction notification sound
-  const playTransactionSound = useCallback(() => {
-    try {
-      // Create audio context on first interaction
-      if (!audioContextRef.current) {
-        audioContextRef.current = new (
-          window.AudioContext ||
-          (window as unknown as { webkitAudioContext: typeof AudioContext })
-            .webkitAudioContext
-        )();
-      }
-      const ctx = audioContextRef.current;
-
-      // Create oscillator for a subtle "ding" sound
-      const oscillator = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(ctx.destination);
-
-      // High-pitched subtle ding
-      oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5 note
-      oscillator.frequency.exponentialRampToValueAtTime(
-        1760,
-        ctx.currentTime + 0.05,
-      ); // Quick rise
-      oscillator.frequency.exponentialRampToValueAtTime(
-        1320,
-        ctx.currentTime + 0.1,
-      ); // Settle
-
-      oscillator.type = "sine";
-
-      // Quick fade in and out for subtle effect
-      gainNode.gain.setValueAtTime(0, ctx.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.02); // Very quiet
-      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-
-      oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + 0.15);
-    } catch {
-      // Silently fail if audio not supported
-    }
-  }, []);
-
   // Get 3 transactions starting from current index
   const visibleTransactions = [
     allTransactions[currentIndex % allTransactions.length],
@@ -91,15 +44,13 @@ export default function Hero() {
   ];
 
   // Rotate transactions every 1.5 seconds (faster) and play sound
+  // Rotate transactions every 1.5 seconds (faster)
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % allTransactions.length);
-      if (soundEnabled) {
-        playTransactionSound();
-      }
     }, 1500);
     return () => clearInterval(interval);
-  }, [playTransactionSound, soundEnabled]);
+  }, []);
 
   return (
     <section className="relative pt-[180px] pb-20 px-4 md:px-6 overflow-hidden">
@@ -217,47 +168,6 @@ export default function Hero() {
                       Your Transactions
                     </h3>
                     {/* Sound Toggle Button */}
-                    <button
-                      onClick={() => setSoundEnabled(!soundEnabled)}
-                      className="p-1.5 rounded-full hover:bg-[#262626] transition-colors"
-                      title={soundEnabled ? "Mute sounds" : "Enable sounds"}
-                    >
-                      {soundEnabled ? (
-                        <svg
-                          className="w-4 h-4 text-primary"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          className="w-4 h-4 text-[#666]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
-                          />
-                        </svg>
-                      )}
-                    </button>
                   </div>
                   {/* Animated Cascading transactions */}
                   <div className="relative flex flex-col items-center overflow-hidden">
