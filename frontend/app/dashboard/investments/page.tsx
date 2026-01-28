@@ -84,9 +84,7 @@ export default function InvestmentsPage() {
               </span>
             </div>
 
-            {/* Mock Chart Area */}
             <div className="h-64 flex items-end justify-between gap-1 items-end pl-2 border-b border-[#333] border-l border-[#333] pb-2 relative">
-              {/* Just a visual CSS bar chart representation for now */}
               {[40, 65, 50, 80, 70, 90, 85, 100, 95, 120, 110, 140].map(
                 (h, i) => (
                   <div
@@ -113,7 +111,6 @@ export default function InvestmentsPage() {
           <h3 className="text-white font-bold mb-6">Allocation</h3>
 
           <div className="flex justify-center mb-8 relative">
-            {/* Visual Doughnut */}
             <div className="w-48 h-48 rounded-full border-[16px] border-[#262626] relative flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border-[16px] border-primary border-t-transparent border-r-transparent rotate-45"></div>
               <div className="absolute inset-0 rounded-full border-[16px] border-blue-500 border-b-transparent border-l-transparent border-t-transparent rotate-[180deg]"></div>

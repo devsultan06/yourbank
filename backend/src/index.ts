@@ -8,13 +8,25 @@ import { protect } from "./middlewares/authMiddleware.js";
 import logger from "./utils/logger.js";
 import { testConnection } from "./db.js";
 import { successResponse, errorResponse } from "./utils/apiResponse.js";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://yourfrontend.com"
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
+
 app.use(express.json());
+
 app.use(cookieParser());
 
 // HTTP request logging

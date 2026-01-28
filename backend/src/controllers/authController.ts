@@ -129,6 +129,7 @@ export const logout = (_req: Request, res: Response) => {
   res.clearCookie("refreshToken", { path: "/auth/refresh" });
   res.json(successResponse(null, "Logged out successfully"));
 };
+
 // Complete Onboarding
 export const onboarding = async (req: Request, res: Response) => {
   try {

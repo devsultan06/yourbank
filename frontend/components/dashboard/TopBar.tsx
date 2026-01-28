@@ -7,7 +7,6 @@ export default function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
   return (
     <header className="sticky top-0 z-30 w-full bg-[#1C1C1C]/80 backdrop-blur-xl border-b border-[#262626] h-20">
       <div className="flex items-center justify-between h-full px-6 md:px-8">
-        {/* Mobile Menu Button + Title (on mobile) */}
         <div className="flex items-center gap-4 lg:hidden">
           <button
             onClick={onMenuClick}
@@ -18,7 +17,6 @@ export default function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
           <span className="text-lg font-bold text-white">Dashboard</span>
         </div>
 
-        {/* Global Search (Desktop) */}
         <div className="hidden lg:flex items-center flex-1 max-w-xl">
           <div className="relative w-full group">
             <Search
@@ -33,15 +31,12 @@ export default function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
           </div>
         </div>
 
-        {/* Right Actions */}
         <div className="flex items-center gap-4 md:gap-6">
-          {/* Notifications */}
           <button className="relative p-2 text-[#B3B3B3] hover:text-white transition-colors">
             <Bell size={22} />
             <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-primary rounded-full ring-2 ring-[#1C1C1C]"></span>
           </button>
 
-          {/* User Profile */}
           <div className="flex items-center gap-3 pl-4 border-l border-[#262626]">
             <div className="hidden md:block text-right">
               <p className="text-sm font-medium text-white">Sultan Abaniks</p>
