@@ -1,3 +1,4 @@
+import QueryProvider from "@/components/providers/QueryProvider";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -9,7 +10,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <link rel="icon" href="/images/logo.svg" />
-      <body className="">{children}</body>
+      <body className="">
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }

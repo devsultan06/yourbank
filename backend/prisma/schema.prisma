@@ -1,25 +1,23 @@
 generator client {
   provider = "prisma-client-js"
-  engineType = "binary" // <-- change this
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  email     String   @unique
-  password  String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  
-  // Onboarding & Profile Fields
-  isOnboardingComplete Boolean @default(false)
-  firstName          String?
-  lastName           String?
-  phone              String?
+  id                   Int      @id @default(autoincrement())
+  username             String   @unique
+  email                String   @unique
+  password             String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  firstName            String?
+  isOnboardingComplete Boolean  @default(false)
+  lastName             String?
+  phone                String?
 
   @@map("users")
 }

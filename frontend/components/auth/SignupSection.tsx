@@ -3,10 +3,42 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { signup, SignupCredentials } from "@/services/auth/signup.service";
 import ScrollAnimation from "@/components/ui/ScrollAnimation";
+import { signupSchema, SignupFormValues } from "@/schemas/auth";
 
 export default function SignupSection() {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+  });
+
+  const { mutate: signupMutation, isPending: isSigningUp } = useMutation({
+    mutationFn: (data: SignupCredentials) => signup(data),
+    onSuccess: (response) => {
+      console.log("✅ User registered successfully:", response);
+      // Redirect to login or dashboard as requested (Dashboard implies successful login)
+      router.push("/dashboard");
+    },
+    onError: (error: Error) => {
+      console.error("❌ Error registering user:", error);
+      alert(error.message || "Failed to register. Please try again.");
+    },
+  });
+
+  const onSubmit = (data: SignupFormValues) => {
+    signupMutation(data);
+  };
 
   return (
     <section className="px-4 md:px-6 flex justify-center pt-[120px] pb-20 items-center relative min-h-screen">
@@ -40,29 +72,44 @@ export default function SignupSection() {
               features and personalized experiences.
             </p>
 
-            <form className="space-y-6 max-w-[600px] mx-auto">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-6 max-w-[600px] mx-auto"
+            >
               {/* Username Field */}
               <div className="relative">
                 <input
+                  {...register("username")}
                   type="text"
                   placeholder="Create a Username"
                   className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
                 />
+                {errors.username && (
+                  <p className="text-red-500 text-xs mt-1 text-left px-6">
+                    {errors.username.message}
+                  </p>
+                )}
               </div>
 
-              {/* Email & Password Row */}
-              {/* Email */}
+              {/* Email Field */}
               <div className="relative">
                 <input
+                  {...register("email")}
                   type="email"
                   placeholder="Enter your Email"
                   className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-1 text-left px-6">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
-              {/* Password */}
+              {/* Password Field */}
               <div className="relative">
                 <input
+                  {...register("password")}
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your Password"
                   className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors pr-12"
@@ -86,15 +133,21 @@ export default function SignupSection() {
                     <circle cx="12" cy="12" r="3" />
                   </svg>
                 </button>
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-1 text-left px-6">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               {/* Buttons */}
               <div className="space-y-4 pt-8">
                 <button
                   type="submit"
-                  className="w-full bg-primary text-[#1C1C1C] font-semibold rounded-full py-4 text-[16px] hover:bg-opacity-90 transition-all hover:scale-[1.02]"
+                  disabled={isSigningUp}
+                  className="w-full bg-primary text-[#1C1C1C] font-semibold rounded-full py-4 text-[16px] hover:bg-opacity-90 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Sign Up
+                  {isSigningUp ? "Signing Up..." : "Sign Up"}
                 </button>
                 <Link
                   href="/auth/login"
