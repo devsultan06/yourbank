@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../db.js";
 import logger from "../utils/logger.js";
 import { successResponse, errorResponse } from "../utils/apiResponse.js";
+import { sendOTP } from "../utils/email.js";
 
 // Helper functions
 const createAccessToken = (id: number) =>
@@ -28,20 +29,39 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json(errorResponse("User already exists", 400));
     }
 
-    // Hash password and create user
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    // Hash password and create user with OTP
     const hashed = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: {
         username,
         email,
         password: hashed,
+        otp,
+        otpExpiry,
+        isVerified: false,
       },
       select: {
         id: true,
         username: true,
         email: true,
+        isVerified: true,
       },
     });
+
+    // Send OTP Email
+    const emailSent = await sendOTP({ email, username, otp });
+
+    if (!emailSent) {
+      // If email fails, delete the user so they can try again
+      await prisma.user.delete({ where: { id: user.id } });
+      return res
+        .status(500)
+        .json(errorResponse("Failed to send verification email", 500));
+    }
 
     // Generate tokens immediately after registration
     const accessToken = createAccessToken(user.id);
@@ -59,7 +79,7 @@ export const register = async (req: Request, res: Response) => {
       .json(
         successResponse(
           { user, accessToken },
-          "User registered and logged in successfully",
+          "User registered. Please verify your email.",
         ),
       );
   } catch (error) {
@@ -168,6 +188,89 @@ export const onboarding = async (req: Request, res: Response) => {
       { err: error, userId: (req as any).user?.id },
       "Onboarding failed",
     );
+    res.status(500).json(errorResponse("Server error", 500));
+  }
+};
+
+// Verify Email with OTP
+export const verifyEmail = async (req: Request, res: Response) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json(errorResponse("User not found", 404));
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json(errorResponse("Email already verified", 400));
+    }
+
+    if (!user.otp || user.otp !== otp) {
+      return res.status(400).json(errorResponse("Invalid OTP", 400));
+    }
+
+    if (!user.otpExpiry || new Date() > user.otpExpiry) {
+      return res.status(400).json(errorResponse("OTP expired", 400));
+    }
+
+    // Verify user
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        otp: null,
+        otpExpiry: null,
+      },
+    });
+
+    res.json(successResponse(null, "Email verified successfully"));
+  } catch (error) {
+    logger.error({ err: error, email: req.body.email }, "Verification failed");
+    res.status(500).json(errorResponse("Server error", 500));
+  }
+};
+
+// Resend OTP
+export const resendOTP = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json(errorResponse("User not found", 404));
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json(errorResponse("Email already verified", 400));
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 15 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { otp, otpExpiry },
+    });
+
+    const emailSent = await sendOTP({ email, username: user.username, otp });
+
+    if (!emailSent) {
+      return res
+        .status(500)
+        .json(errorResponse("Failed to send verification email", 500));
+    }
+
+    const responseData: any = {};
+    if (process.env.NODE_ENV !== "production") {
+      responseData.devOtp = otp;
+    }
+
+    res.json(successResponse(responseData, "OTP resent successfully"));
+  } catch (error) {
+    logger.error({ err: error, email: req.body.email }, "Resend OTP failed");
     res.status(500).json(errorResponse("Server error", 500));
   }
 };

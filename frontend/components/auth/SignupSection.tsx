@@ -25,10 +25,12 @@ export default function SignupSection() {
 
   const { mutate: signupMutation, isPending: isSigningUp } = useMutation({
     mutationFn: (data: SignupCredentials) => signup(data),
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
       console.log("✅ User registered successfully:", response);
-      // Redirect to login or dashboard as requested (Dashboard implies successful login)
-      router.push("/dashboard");
+      // Redirect to verification page
+      router.push(
+        `/auth/verify-email?email=${encodeURIComponent(variables.email)}`,
+      );
     },
     onError: (error: Error) => {
       console.error("❌ Error registering user:", error);

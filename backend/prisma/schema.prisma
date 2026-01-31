@@ -18,6 +18,9 @@ model User {
   isOnboardingComplete Boolean  @default(false)
   lastName             String?
   phone                String?
+  isVerified           Boolean  @default(false)
+  otp                  String?
+  otpExpiry            DateTime?
 
   @@map("users")
 }
