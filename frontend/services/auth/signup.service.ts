@@ -28,7 +28,7 @@ export const signup = async (
 
   // Save token to localStorage so fetch.ts can use it
   if (typeof window !== "undefined" && response.data.accessToken) {
-    localStorage.setItem("token", response.data.accessToken);
+    localStorage.setItem("accessToken", response.data.accessToken);
   }
 
   return response.data;

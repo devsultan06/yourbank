@@ -7,6 +7,9 @@ import {
   onboarding,
   verifyEmail,
   resendOTP,
+  forgotPassword,
+  verifyResetOTP,
+  resetPassword,
 } from "../controllers/authController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
@@ -20,5 +23,10 @@ router.post("/login", login);
 router.post("/refresh", refresh);
 router.post("/logout", logout);
 router.put("/onboarding", protect, onboarding);
+
+// Password Reset Routes
+router.post("/forgot-password", forgotPassword);
+router.post("/verify-reset-otp", verifyResetOTP);
+router.post("/reset-password", resetPassword);
 
 export default router;

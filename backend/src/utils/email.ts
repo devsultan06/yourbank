@@ -1,61 +1,84 @@
-import * as Brevo from "@getbrevo/brevo";
+import { Resend } from "resend";
 import logger from "./logger.js";
 
 interface SendOTPOptions {
   email: string;
   username: string;
   otp: string;
+  type?: "verification" | "reset";
 }
 
-export const sendOTP = async ({ email, username, otp }: SendOTPOptions) => {
+export const sendOTP = async ({
+  email,
+  username,
+  otp,
+  type = "verification",
+}: SendOTPOptions) => {
   try {
-    const apiInstance = new Brevo.TransactionalEmailsApi();
-
-    // Configure API key authorization: api-key
-    apiInstance.setApiKey(
-      Brevo.TransactionalEmailsApiApiKeys.apiKey,
-      process.env.BREVO_API_KEY || "",
-    );
-
-    const sendSmtpEmail = new Brevo.SendSmtpEmail();
-
-    sendSmtpEmail.subject = "Verify your account - YourBank";
-    sendSmtpEmail.htmlContent = `
-      <html>
-        <body>
-          <h1>Welcome to YourBank, ${username}!</h1>
-          <p>Please use the following OTP to verify your account:</p>
-          <h2 style="color: #4CAF50;">${otp}</h2>
-          <p>This code will expire in 15 minutes.</p>
-          <p>If you didn't request this, please ignore this email.</p>
-        </body>
-      </html>
-    `;
-    sendSmtpEmail.sender = {
-      name: "YourBank Team",
-      email: process.env.BREVO_SENDER_EMAIL || "no-reply@yourbank.com",
-    };
-    sendSmtpEmail.to = [{ email: email, name: username }];
-
-    await apiInstance.sendTransacEmail(sendSmtpEmail);
-    logger.info({ email }, "OTP email sent successfully");
-    return true;
-  } catch (error: any) {
-    logger.error({ err: error, email }, "Failed to send OTP email");
-
-    // FALLBACK FOR DEVELOPMENT:
-    // If we are in dev mode and the email fails (e.g., account disabled),
-    // log the OTP to the console and allow registration to proceed.
-    if (process.env.NODE_ENV !== "production") {
-      console.log("\n==================================================");
-      console.log("⚠️  EMAIL SENDING FAILED (Dev Mode Fallback) ⚠️");
-      console.log("--------------------------------------------------");
-      console.log(`To: ${email}`);
-      console.log(`OTP: \x1b[32m${otp}\x1b[0m`); // Green color for visibility
-      console.log("==================================================\n");
-      return true; // Return true to pretend it worked
+    if (!process.env.RESEND_API_KEY) {
+      logger.error("❌ RESEND_API_KEY not set in .env file");
+      // Fallback for dev mode
+      if (process.env.NODE_ENV !== "production") {
+        console.log("\n⚠️  RESEND API KEY MISSING - FALLBACK LOG ⚠️");
+        console.log(`To: ${email}`);
+        console.log(`Type: ${type}`);
+        console.log(`OTP: ${otp}`);
+        console.log("-----------------------------------------------\n");
+        return true;
+      }
+      return false;
     }
 
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    const isReset = type === "reset";
+    const subject = isReset
+      ? "Reset your password - YourBank"
+      : "Verify your account - YourBank";
+    const title = isReset
+      ? `Hello ${username}, request to reset password received`
+      : `Welcome to YourBank, ${username}!`;
+    const message = isReset
+      ? "Please use the following code to reset your password:"
+      : "Please use the following One-Time Password (OTP) to verify your account:";
+
+    const { data, error } = await resend.emails.send({
+      from: "YourBank <onboarding@resend.dev>", // Default testing domain for Resend
+      to: email, // Resend only allows sending to your own email during testing
+      subject: subject,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+          <div style="padding: 20px; background-color: #f8f9fa; border-radius: 10px;">
+            <h1 style="color: #4CAF50; margin-bottom: 20px;">${title}</h1>
+            <p style="font-size: 16px;">${message}</p>
+            <div style="background-color: #fff; padding: 15px; border-radius: 8px; text-align: center; margin: 25px 0; border: 1px solid #e9ecef;">
+              <h2 style="color: #333; margin: 0; letter-spacing: 5px; font-size: 32px;">${otp}</h2>
+            </div>
+            <p style="color: #666;">This code will expire in 15 minutes.</p>
+            <p style="color: #999; font-size: 12px; margin-top: 30px;">If you didn't request this code, please ignore this email.</p>
+          </div>
+        </div>
+      `,
+    });
+
+    if (error) {
+      logger.error(
+        { err: error, email },
+        "❌ Failed to send OTP email via Resend",
+      );
+      return false;
+    }
+
+    logger.info(
+      { email, id: data?.id },
+      "✅ OTP email sent successfully via Resend",
+    );
+    return true;
+  } catch (error: any) {
+    logger.error(
+      { err: error, email },
+      "❌ Failed to send OTP email via Resend",
+    );
     return false;
   }
 };

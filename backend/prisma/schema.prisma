@@ -18,9 +18,26 @@ model User {
   isOnboardingComplete Boolean  @default(false)
   lastName             String?
   phone                String?
-  isVerified           Boolean  @default(false)
-  otp                  String?
-  otpExpiry            DateTime?
+  isVerified           Boolean    @default(false)
+  otpTokens            OtpToken[]
 
   @@map("users")
+}
+
+model OtpToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code      String
+  type      OtpType
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@map("otp_tokens")
+}
+
+enum OtpType {
+  VERIFY_EMAIL
+  RESET_PASSWORD
 }

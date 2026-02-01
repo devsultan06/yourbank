@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { verifyEmail, resendOTP } from "@/services/auth/verification.service";
+import { toast } from "react-toastify";
 import ScrollAnimation from "@/components/ui/ScrollAnimation";
 import OtpInput from "@/components/ui/OtpInput";
 import Image from "next/image";
@@ -30,6 +31,7 @@ export default function VerifySection() {
   const {
     control,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<VerifyFormValues>({
     resolver: zodResolver(verifySchema),
@@ -41,10 +43,13 @@ export default function VerifySection() {
       return await verifyEmail({ email, otp: data.otp });
     },
     onSuccess: () => {
-      router.push("/dashboard");
+      router.push("/onboarding");
     },
     onError: (error: Error) => {
-      alert(error.message || "Failed to verify. Please check code.");
+      setError("otp", {
+        type: "manual",
+        message: error.message || "Failed to verify. Please check code.",
+      });
     },
   });
 
@@ -54,10 +59,10 @@ export default function VerifySection() {
       return await resendOTP(email);
     },
     onSuccess: () => {
-      alert("New OTP sent to your email.");
+      toast.success("New OTP sent to your email.");
     },
     onError: (error: Error) => {
-      alert(error.message || "Failed to resend OTP.");
+      toast.error(error.message || "Failed to resend OTP.");
     },
   });
 

@@ -2,24 +2,41 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { onboardingSchema, OnboardingFormValues } from "@/schemas/auth";
+import { completeOnboarding } from "@/services/auth/onboarding.service";
 import ScrollAnimation from "@/components/ui/ScrollAnimation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function OnboardingSection() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<OnboardingFormValues>({
+    resolver: zodResolver(onboardingSchema),
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Connect to backend API
-    console.log("Submitting:", formData);
-    // On success, redirect to dashboard
-    // router.push('/dashboard');
+  const { mutate: onboardingMutation, isPending: isOnboarding } = useMutation({
+    mutationFn: (data: OnboardingFormValues) => completeOnboarding(data),
+    onSuccess: () => {
+      toast.success("Profile setup complete!");
+      router.push("/dashboard");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to complete onboarding.");
+    },
+  });
+
+  const onSubmit = (data: OnboardingFormValues) => {
+    onboardingMutation(data);
   };
 
   return (
@@ -35,7 +52,6 @@ export default function OnboardingSection() {
 
       <div className="relative w-full max-w-[500px] min-h-[500px] md:min-h-[600px] rounded-[30px] overflow-hidden border border-[#262626] flex flex-col items-center justify-center p-6 md:p-10">
         <div className="absolute inset-0 w-full h-full">
-          {/* Using the same background as Login/Signup for consistency */}
           <Image
             src="/images/Login.png"
             alt="Background"
@@ -55,47 +71,48 @@ export default function OnboardingSection() {
               profile.
             </p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Name Row */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="relative">
                   <input
+                    {...register("firstName")}
                     type="text"
                     placeholder="First Name"
-                    value={formData.firstName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, firstName: e.target.value })
-                    }
                     className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
-                    required
                   />
+                  {errors.firstName && (
+                    <p className="text-red-500 text-xs mt-1 text-left px-6">
+                      {errors.firstName.message}
+                    </p>
+                  )}
                 </div>
                 <div className="relative">
                   <input
+                    {...register("lastName")}
                     type="text"
                     placeholder="Last Name"
-                    value={formData.lastName}
-                    onChange={(e) =>
-                      setFormData({ ...formData, lastName: e.target.value })
-                    }
                     className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
-                    required
                   />
+                  {errors.lastName && (
+                    <p className="text-red-500 text-xs mt-1 text-left px-6">
+                      {errors.lastName.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
-              {/* Phone Number */}
               <div className="relative">
                 <input
+                  {...register("phone")}
                   type="tel"
                   placeholder="Phone Number"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
                   className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
-                  required
                 />
+                {errors.phone && (
+                  <p className="text-red-500 text-xs mt-1 text-left px-6">
+                    {errors.phone.message}
+                  </p>
+                )}
               </div>
 
               {/* ID Verification Placeholder (Simulated) */}
@@ -128,13 +145,13 @@ export default function OnboardingSection() {
                 </div>
               </div>
 
-              {/* Submit Button */}
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full bg-primary text-[#1C1C1C] font-semibold rounded-full py-4 text-[16px] hover:bg-opacity-90 transition-all hover:scale-[1.02]"
+                  disabled={isOnboarding}
+                  className="w-full bg-primary text-[#1C1C1C] font-semibold rounded-full py-4 text-[16px] hover:bg-opacity-90 transition-all hover:scale-[1.02] disabled:opacity-50"
                 >
-                  Complete Setup
+                  {isOnboarding ? "Setting up..." : "Complete Setup"}
                 </button>
               </div>
             </form>

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { signup, SignupCredentials } from "@/services/auth/signup.service";
 import ScrollAnimation from "@/components/ui/ScrollAnimation";
 import { signupSchema, SignupFormValues } from "@/schemas/auth";
+import { toast } from "react-toastify";
 
 export default function SignupSection() {
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +35,7 @@ export default function SignupSection() {
     },
     onError: (error: Error) => {
       console.error("❌ Error registering user:", error);
-      alert(error.message || "Failed to register. Please try again.");
+      toast.error(error.message || "Failed to register. Please try again.");
     },
   });
 

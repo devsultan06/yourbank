@@ -3,10 +3,44 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { login } from "@/services/auth/login.service";
+import { loginSchema, LoginFormValues } from "@/schemas/auth";
 import ScrollAnimation from "@/components/ui/ScrollAnimation";
 
 export default function LoginSection() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const { mutate: loginMutation, isPending: isLoggingIn } = useMutation({
+    mutationFn: (data: LoginFormValues) => login(data),
+    onSuccess: () => {
+      toast.success("Login successful!");
+      router.push("/dashboard");
+    },
+    onError: (error: Error) => {
+      toast.error(
+        error.message || "Login failed. Please check your credentials.",
+      );
+    },
+  });
+
+  const onSubmit = (data: LoginFormValues) => {
+    loginMutation(data);
+  };
 
   return (
     <section className="px-4 md:px-6 flex justify-center pt-[120px] pb-20 items-center relative min-h-screen">
@@ -39,19 +73,29 @@ export default function LoginSection() {
               Welcome back! Please log in to access your account.
             </p>
 
-            <form className="space-y-6">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-6 max-w-[400px] mx-auto"
+            >
               {/* Email */}
               <div className="relative">
                 <input
+                  {...register("email")}
                   type="email"
                   placeholder="Enter your Email"
                   className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors"
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-xs mt-1 text-left px-6">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
               {/* Password */}
               <div className="relative">
                 <input
+                  {...register("password")}
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your Password"
                   className="w-full bg-[#1A1A1A] border border-[#262626] rounded-full px-6 py-4 text-white placeholder:text-[#59595A] focus:outline-none focus:border-primary transition-colors pr-12"
@@ -75,6 +119,11 @@ export default function LoginSection() {
                     <circle cx="12" cy="12" r="3" />
                   </svg>
                 </button>
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-1 text-left px-6">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               {/* Forgot Password */}
@@ -91,9 +140,10 @@ export default function LoginSection() {
               <div className="space-y-4 pt-4">
                 <button
                   type="submit"
-                  className="w-full bg-primary text-[#1C1C1C] font-semibold rounded-full py-4 text-[16px] hover:bg-opacity-90 transition-all hover:scale-[1.02]"
+                  disabled={isLoggingIn}
+                  className="w-full bg-primary text-[#1C1C1C] font-semibold rounded-full py-4 text-[16px] hover:bg-opacity-90 transition-all hover:scale-[1.02] disabled:opacity-50"
                 >
-                  Login
+                  {isLoggingIn ? "Logging in..." : "Login"}
                 </button>
                 <Link
                   href="/auth/register"
