@@ -6,7 +6,7 @@ import { pinoHttp } from "pino-http";
 import authRoutes from "./routes/auth.js";
 import { protect } from "./middlewares/authMiddleware.js";
 import logger from "./utils/logger.js";
-import { testConnection } from "./db.js";
+import { testConnection } from "../lib/prisma.js";
 import { successResponse, errorResponse } from "./utils/apiResponse.js";
 import cors from "cors";
 

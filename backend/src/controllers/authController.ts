@@ -1,9 +1,10 @@
 import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { prisma } from "../db.js";
-import { OtpType } from "@prisma/client";
+import { prisma } from "../../lib/prisma";
 import logger from "../utils/logger.js";
+import { OtpType } from "../../generated/prisma/client"; // import enum from generated client
+
 import { successResponse, errorResponse } from "../utils/apiResponse.js";
 import { sendOTP } from "../utils/email.js";
 
