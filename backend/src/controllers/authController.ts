@@ -443,3 +443,37 @@ export const resetPassword = async (req: Request, res: Response) => {
     res.status(500).json(errorResponse("Server error", 500));
   }
 };
+
+// Get current user profile
+export const getMe = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        isOnboardingComplete: true,
+        isVerified: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json(errorResponse("User not found", 404));
+    }
+
+    res.json(successResponse(user, "User profile retrieved successfully"));
+  } catch (error) {
+    logger.error(
+      { err: error, userId: (req as any).user?.id },
+      "Get profile failed",
+    );
+    res.status(500).json(errorResponse("Server error", 500));
+  }
+};

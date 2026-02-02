@@ -10,6 +10,7 @@ import {
   forgotPassword,
   verifyResetOTP,
   resetPassword,
+  getMe,
 } from "../controllers/authController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
@@ -23,6 +24,7 @@ router.post("/login", login);
 router.post("/refresh", refresh);
 router.post("/logout", logout);
 router.put("/onboarding", protect, onboarding);
+router.get("/me", protect, getMe);
 
 // Password Reset Routes
 router.post("/forgot-password", forgotPassword);
